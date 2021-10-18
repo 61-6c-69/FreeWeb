@@ -1,0 +1,70 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<root>
+   <service name="shecan" type="dns">
+      <company>
+         <name>بنیان رایان سامانه</name>
+         <website>shecan.ir</website>
+         <country>iran</country>
+      </company>
+      <blockcheck type="url">
+         <url>https://shecan.ir/</url>
+         <method>GET</method>
+         <query>
+            <value key="url">[domain]</value>
+         </query>
+      </blockcheck>
+      <dns>
+         <value>185.51.200.2</value>
+         <value>178.22.122.100</value>
+      </dns>
+   </service>
+   <service name="begzar" type="dns">
+      <company>
+         <name>هاست سرور پارس</name>
+         <website>begzar.ir</website>
+         <country>iran</country>
+      </company>
+      <blockcheck type="url">
+         <url>https://begzar.ir/</url>
+         <method>POST</method>
+         <data>
+            <value key="search_domain">بررسی کن</value>
+            <value key="domain_name">[domain]</value>
+         </data>
+      </blockcheck>
+      <dns>
+         <value>185.55.226.26</value>
+         <value>185.55.225.25</value>
+      </dns>
+   </service>
+   <service name="hostiran" type="dns">
+      <company>
+         <name>هاست ایران</name>
+         <website>hostiran.net</website>
+         <country>iran</country>
+      </company>
+      <blockcheck type="array">
+         <value>zoom.us</value>
+         <value>zestyio.com</value>
+         <value>zeplin.io</value>
+         <value>zendesk.com</value>
+         <value>zeit.co</value>
+         <value>yougetsignal.com</value>
+         <value>yoast.com</value>
+         <value>yarnpkg.com</value>
+         <value>xilinx.com</value>
+         <value>xboxlive.com</value>
+     </blockcheck>
+      <blockcheck type="url">
+         <url>https://hostiran.net/endpoint/api/hostiran-proxy</url>
+         <method>GET</method>
+         <query>
+            <value key="search">[domain]</value>
+         </query>
+      </blockcheck>
+      <dns>
+         <value>172.29.0.100</value>
+         <value>172.29.2.100</value>
+      </dns>
+   </service>
+</root>
