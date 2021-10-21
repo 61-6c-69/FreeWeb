@@ -172,12 +172,7 @@
 
 	Sub window_onload()
 		Dim service_option
-		
-		'Set WshShell = WScript.CreateObject("WScript.Shell")
-		If WshShell.Arguments.length = 0 Then
-			MsgBox("dsf")
-		End If
-		
+
 		window.resizeTo 370, 610
 		Set DATA = XmlParse(GetRequest("https://raw.githubusercontent.com/61-6c-69/FreeWeb/main/data.xml"))
 
