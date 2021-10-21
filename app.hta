@@ -1,0 +1,198 @@
+<head>
+  <meta http-equiv="x-ua-compatible" content="IE=9">
+  <title>Free Web</title>
+  <hta:application 
+		id="freeweb" 
+		applicationname="freeweb"
+		caption="yes"
+		icon="/graphics/creature.ico"
+		showintaskbar="yes"
+		singleinstance="yes"
+		SCROLL="no"
+	>
+	<link href="https://cdn.jsdelivr.net/gh/rastikerdar/vazir-font@v30.1.0/dist/font-face.css" rel="stylesheet" type="text/css" />
+	<style>
+		body, p, button, div, input{
+			font-family: 'Vazir', sans-serif;
+		}
+		body{
+			padding: 10px;
+			margin: 0px;
+			background-color: #23242a;
+			color: #fff;
+			direction: rtl;
+		}
+		.select-service{
+			background-color: #2d3035;
+			width: 100%;
+			border: 1px solid #40444b;
+			padding: 5px;
+			color: #fff
+		}
+		.connect-service{
+			width: 100%;
+			color: #fff;
+    		background-color: #db6574;
+    		border:1px solid #db6574;
+			padding: .375rem .75rem;
+			font-weight: bold;
+			border-radius: 5px;
+			margin-top: 5px;
+		}
+		.card{
+			background-color: #2d3035;
+			border: 1ppx solid #2d3035;
+			color: #898d99;
+			padding: 20px;
+			margin-bottom: 5px;
+		}
+		.card>div{
+			display: inline-block;
+			width: 49%;
+			font-weight: bold;
+			font-size: 15px;
+		}
+		.text-left{
+			text-align: left;
+		}
+		.text-red{
+			color: #e95f71;
+		}
+		.search{
+		}
+		.search>input{
+			background-color: #2d3035;
+			width: 200px;
+			border: 1px solid #40444b;
+			padding: 5px;
+			color: #fff
+		}
+		.search>button{
+			color: #fff;
+    		background-color: #db6574;
+    		border:1px solid #db6574;
+			padding: .375rem .75rem;
+			font-weight: bold;
+			border-radius: 5px;
+			margin-top: 5px;
+		}
+		.controller-panel{
+			margin-top: 10px;
+		}
+	</style>
+</head>
+<body>
+	<div id="app">
+		<!--info-->
+		<div class="card">
+			<div>سرویس دهنده</div>
+			<div class="text-left text-red" id="service_name"></div>
+		</div>
+		<div class="card">
+			<div>وبسایت</div>
+			<div class="text-left text-red" id="service_website"></div>
+		</div>
+		<div class="card">
+			<div>کشور</div>
+			<div class="text-left text-red" id="service_country"></div>
+		</div>
+		<div class="card">
+			<div>دی ان اس 1</div>
+			<div class="text-left text-red" id="dns1"></div>
+		</div>
+		<div class="card">
+			<div>دی ان اس 2</div>
+			<div class="text-left text-red" id="dns2"></div>
+		</div>
+		<!--search domain-->
+		<div class="card search">
+			<button>بررسی</button>
+			<input type="text" class="text-left" value="www.google.com"/>
+		</div>
+		<!--panel-->
+		<div class="controller-panel">
+			<select class="select-service" id="select_service"></select>
+			<select class="select-service" id="select_network" style="margin-top:5px"></select>
+			<button class="connect-service" id="set_dns_service">فعال کردن</button>
+		</div>
+	</div>
+</body>
+
+<script type="text/vbscript">
+	Dim DATA
+	Dim Network
+
+	Function GetRequest(url)
+		Dim gr
+		Set gr = CreateObject("Msxml2.XMLHTTP.6.0")
+		gr.Open "GET", url, false
+		gr.Send
+		GetRequest = gr.responseText
+	End Function
+	
+	Function XmlParse(xml)
+		Dim doc
+		Dim nodes
+		Set doc = CreateObject("Microsoft.XMLDOM")
+		doc.loadXML(xml)
+		Set nodes = doc.selectNodes("//service")
+		Set XmlParse = nodes
+	End Function
+
+	Function LoadElements(service)
+		service_name.innerText = DATA(service).selectSingleNode("company/name").text
+		service_website.innerText = DATA(service).selectSingleNode("company/website").text
+		service_country.innerText = DATA(service).selectSingleNode("company/country").text
+		dns1.innerText = DATA(service).selectSingleNode("dns1").text
+		dns2.innerText = DATA(service).selectSingleNode("dns2").text
+	End Function
+	
+	Function GetNetworkInterface()
+		Set objWMIService = GetObject("winmgmts:" & "{impersonationLevel=impersonate}!\\.\root\cimv2")
+		Set GetNetworkInterface = objWMIService.ExecQuery("Select * from Win32_NetworkAdapterConfiguration where IPEnabled = TRUE")
+	End Function
+
+	Sub select_service_onchange()
+		LoadElements(select_service.selectedIndex)
+	End Sub 
+
+	Sub set_dns_service_onclick()
+		network_index = select_network.selectedIndex
+		dns_server = Array(DATA(select_service.selectedIndex).selectSingleNode("dns1").text, DATA(select_service.selectedIndex).selectSingleNode("dns2").text)
+		Set network_interface = Network.ItemIndex(network_index)
+		error0 = network_interface.EnableDHCP()
+		if error0 <> 0 Then
+			MsgBox("خطا در تنظیم dns")
+		End If
+		error1 = network_interface.SetDNSServerSearchOrder(dns_server)
+		if error1 <> 0 Then
+			MsgBox("خطا در تنظیم dns")
+		End If
+	End Sub
+
+	Sub window_onload()
+		Dim service_option
+		
+		'Set WshShell = WScript.CreateObject("WScript.Shell")
+		If WshShell.Arguments.length = 0 Then
+			MsgBox("dsf")
+		End If
+		
+		window.resizeTo 370, 610
+		Set DATA = XmlParse(GetRequest("https://raw.githubusercontent.com/61-6c-69/FreeWeb/main/data.xml"))
+
+		For Each itm In DATA
+			Set service_option = document.createElement("option")
+			service_option.innerText = itm.GetAttribute("name")
+			select_service.add(service_option)
+		Next
+		LoadElements(0)
+		
+		Set Network = GetNetworkInterface()
+		For Each net in Network
+			Set network_option = document.createElement("option")
+			network_option.innerText = net.Caption 
+			select_network.add(network_option)
+		Next 
+	End Sub
+</script>
