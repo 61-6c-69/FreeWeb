@@ -167,6 +167,8 @@
 		error1 = network_interface.SetDNSServerSearchOrder(dns_server)
 		if error1 <> 0 Then
 			MsgBox("خطا در تنظیم dns")
+		Else
+			MsgBox("dns با موفقیت تنظیم شد.")
 		End If
 	End Sub
 
