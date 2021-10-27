@@ -106,8 +106,8 @@
 		</div>
 		<!--search domain-->
 		<div class="card search">
-			<button>بررسی</button>
-			<input type="text" class="text-left" value="www.google.com"/>
+			<button id="search_domain">بررسی</button>
+			<input  id="search_domain_input" type="text" class="text-left" value="https://oracle.com"/>
 		</div>
 		<!--panel-->
 		<div class="controller-panel">
@@ -122,12 +122,14 @@
 	Dim DATA
 	Dim Network
 
-	Function GetRequest(url)
+	Function HttpRequest(url, method, req)
 		Dim gr
-		Set gr = CreateObject("Msxml2.XMLHTTP.6.0")
-		gr.Open "GET", url, false
-		gr.Send
-		GetRequest = gr.responseText
+		Set gr = CreateObject("Msxml2.XMLHTTP")
+		gr.Open method, url, false
+		gr.setRequestHeader "Content-Type", "application/x-www-form-urlencoded"
+		gr.setRequestHeader "Content-Length", Len(req)
+		gr.Send req
+		HttpRequest = gr.responseText
 	End Function
 	
 	Function XmlParse(xml)
@@ -151,6 +153,28 @@
 		Set objWMIService = GetObject("winmgmts:" & "{impersonationLevel=impersonate}!\\.\root\cimv2")
 		Set GetNetworkInterface = objWMIService.ExecQuery("Select * from Win32_NetworkAdapterConfiguration where IPEnabled = TRUE")
 	End Function
+	
+	Sub search_domain_onclick()
+		Dim service
+		Dim data_str
+		
+		service = select_service.selectedIndex
+		If DATA(service).selectSingleNode("blockcheck") Is Nothing Then
+			MsgBox("سرویس بررسی وجود ندارد")
+		Else 
+			If DATA(service).selectSingleNode("blockcheck/method").text = "GET" Then
+				data_str = HttpRequest(DATA(service).selectSingleNode("blockcheck/url").text + "?" + Replace(DATA(service).selectSingleNode("blockcheck/query").text, "[domain]", search_domain_input.value), "GET", "")
+			Else
+				data_str = HttpRequest(DATA(service).selectSingleNode("blockcheck/url").text , "POST", Replace(DATA(service).selectSingleNode("blockcheck/query").text, "[domain]", search_domain_input.value))
+			End If 
+			
+			If InStr(data_str, DATA(service).selectSingleNode("blockcheck/find").text) > 0 Then 
+				MsgBox("این وبسایت پشتیبانی میشود")
+			Else 
+				MsgBox("این وبسایت پشتیبانی نمیشود یا تحریم نیست")
+			End If 
+		End If
+	End Sub
 
 	Sub select_service_onchange()
 		LoadElements(select_service.selectedIndex)
@@ -161,11 +185,11 @@
 		dns_server = Array(DATA(select_service.selectedIndex).selectSingleNode("dns1").text, DATA(select_service.selectedIndex).selectSingleNode("dns2").text)
 		Set network_interface = Network.ItemIndex(network_index)
 		error0 = network_interface.EnableDHCP()
-		if error0 <> 0 Then
+		If error0 <> 0 Then
 			MsgBox("خطا در تنظیم dns")
 		End If
 		error1 = network_interface.SetDNSServerSearchOrder(dns_server)
-		if error1 <> 0 Then
+		If error1 <> 0 Then
 			MsgBox("خطا در تنظیم dns")
 		Else
 			MsgBox("dns با موفقیت تنظیم شد.")
@@ -176,7 +200,7 @@
 		Dim service_option
 
 		window.resizeTo 370, 610
-		Set DATA = XmlParse(GetRequest("https://raw.githubusercontent.com/61-6c-69/FreeWeb/main/data.xml"))
+		Set DATA = XmlParse(HttpRequest("https://raw.githubusercontent.com/61-6c-69/FreeWeb/main/data.xml", "GET", ""))
 
 		For Each itm In DATA
 			Set service_option = document.createElement("option")
