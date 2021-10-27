@@ -9,6 +9,7 @@
       <blockcheck type="url">
          <url>https://shecan.ir/</url>
          <method>GET</method>
+		 <find>messagebox success</find>
          <query>
             <value key="url">[domain]</value>
          </query>
@@ -25,6 +26,7 @@
       <blockcheck type="url">
          <url>https://begzar.ir/</url>
          <method>POST</method>
+		 <find>messagebox alert alert-success</find>
          <data>
             <value key="search_domain">بررسی کن</value>
             <value key="domain_name">[domain]</value>
@@ -39,25 +41,6 @@
          <website>hostiran.net</website>
          <country>iran</country>
       </company>
-      <blockcheck type="array">
-         <value>zoom.us</value>
-         <value>zestyio.com</value>
-         <value>zeplin.io</value>
-         <value>zendesk.com</value>
-         <value>zeit.co</value>
-         <value>yougetsignal.com</value>
-         <value>yoast.com</value>
-         <value>yarnpkg.com</value>
-         <value>xilinx.com</value>
-         <value>xboxlive.com</value>
-     </blockcheck>
-      <blockcheck type="url">
-         <url>https://hostiran.net/endpoint/api/hostiran-proxy</url>
-         <method>GET</method>
-         <query>
-            <value key="search">[domain]</value>
-         </query>
-      </blockcheck>
       <dns1>172.29.0.100</dns1>
       <dns2>172.29.2.100</dns2>
    </service>
