@@ -9,7 +9,7 @@
       <blockcheck type="url">
          <url>https://shecan.ir/</url>
          <method>GET</method>
-		 <find>messagebox success</find>
+	 <find>messagebox success</find>
          <query>
             <value key="url">[domain]</value>
          </query>
@@ -26,7 +26,7 @@
       <blockcheck type="url">
          <url>https://begzar.ir/</url>
          <method>POST</method>
-		 <find>messagebox alert alert-success</find>
+	 <find>messagebox alert alert-success</find>
          <data>
             <value key="search_domain">بررسی کن</value>
             <value key="domain_name">[domain]</value>
