@@ -25,7 +25,7 @@
          <url>https://begzar.ir/</url>
          <method>POST</method>
 	 <find>messagebox alert alert-success</find>
-         <query>domain_name=[domain]</query>
+         <query>search_domain=بررسی کن&amp;domain_name=[domain]</query>
       </blockcheck>
       <dns1>185.55.226.26</dns1>
       <dns2>185.55.225.25</dns2>
